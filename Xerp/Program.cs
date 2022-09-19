@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
-using System;
 using Xerp.Core.Services;
 using Xerp.Data;
 

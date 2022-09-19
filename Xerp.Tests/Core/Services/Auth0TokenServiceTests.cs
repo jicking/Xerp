@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xerp.Core.Services;
-using Xunit;
-
 namespace Xerp.Core.Services.Tests;
 
 public class Auth0TokenServiceTests {

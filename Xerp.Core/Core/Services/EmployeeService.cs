@@ -1,11 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xerp.Core.DTO;
-using Xerp.Core.Entities;
 using Xerp.Data;
 
 namespace Xerp.Core.Services;

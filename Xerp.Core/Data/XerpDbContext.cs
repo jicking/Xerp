@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Xerp.Core.Entities;
 
 namespace Xerp.Data;
 
