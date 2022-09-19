@@ -15,11 +15,11 @@ variables:
 
 steps:
 # Enable GitVersion
-- task: gitversion/setup@0
-  inputs:
-    versionSpec: '5.x'
-
-- task: gitversion/execute@0
+# https://gitversion.net/docs/
+#- task: gitversion/setup@0
+#  inputs:
+#    versionSpec: '5.x'
+#- task: gitversion/execute@0
 
 # Run donet scripts
 - script: dotnet restore
