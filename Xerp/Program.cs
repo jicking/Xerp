@@ -1,13 +1,16 @@
 using AutoWrapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
+using Xerp.Core.Services;
 
 namespace Xerp;
 
 public class Program {
 	public static void Main(string[] args) {
 		var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
-		logger.Debug("init main Xerp");
+		logger.Debug("Xerp Service Start =================");
 
 		try {
 			var builder = WebApplication.CreateBuilder(args);
@@ -20,32 +23,62 @@ public class Program {
 			builder.Services.AddRazorPages();
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
-			builder.Services.AddSwaggerGen();
+
+			// Swagger config
+			builder.Services.AddSwaggerGen(option => {
+				//option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+				option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
+					In = ParameterLocation.Header,
+					Description = "Please enter a valid token",
+					Name = "Authorization",
+					Type = SecuritySchemeType.Http,
+					BearerFormat = "JWT",
+					Scheme = "Bearer"
+				});
+				option.AddSecurityRequirement(new OpenApiSecurityRequirement {
+					{
+						new OpenApiSecurityScheme
+						{
+							Reference = new OpenApiReference {
+								Type=ReferenceType.SecurityScheme,
+								Id="Bearer"
+							}
+						},
+						new string[]{}
+					}
+				});
+			});
 
 			// CORS
-			builder.Services.AddCors(
-				options => {
-					options.AddDefaultPolicy(
-						policy => {
-							policy
-							.AllowAnyOrigin()
-							.AllowAnyHeader()
-							.AllowAnyMethod();
-						});
+			builder.Services.AddCors(options => {
+				options.AddDefaultPolicy(policy => {
+					policy
+					.AllowAnyOrigin()
+					.AllowAnyHeader()
+					.AllowAnyMethod();
 				});
+			});
+
 			// Auth
+			builder.Services.AddAuthentication(options => {
+				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			}).AddJwtBearer(options => {
+				options.Authority = "https://jickingdev.us.auth0.com/";
+				options.Audience = "xerp-service";
+			});
 
 			// Add custom options
+			//builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.GoogleRecaptcha));
 
 			// Add custom services
+			builder.Services.AddScoped<IAuthTokenService, Auth0TokenService>();
 
 			var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
 			if (!app.Environment.IsDevelopment()) {
 				app.UseExceptionHandler("/Error");
-				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-				app.UseHsts();
 			}
 
 			app.UseHsts();
@@ -58,7 +91,7 @@ public class Program {
 			}
 
 			app.UseRouting();
-			//app.UseAuthentication();
+			app.UseAuthentication();
 			app.UseAuthorization();
 
 			app.MapRazorPages();
@@ -69,12 +102,13 @@ public class Program {
 		}
 		catch (Exception exception) {
 			// NLog: catch setup errors
-			logger.Error(exception, "Stopped program because of exception");
+			logger.Error(exception, "Xerp Service Error =================");
 			throw;
 		}
 		finally {
 			// Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
 			NLog.LogManager.Shutdown();
+			logger.Debug("Xerp Service Stop =================");
 		}
 	}
 }

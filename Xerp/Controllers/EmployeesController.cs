@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Xerp.Core.DTO;
 
 namespace Xerp.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
+[Route("api/[controller]"), ApiController, Authorize]
 public class EmployeesController : ControllerBase {
 	private readonly ILogger<EmployeesController> _logger;
 	private readonly List<EmployeeDto> _employees;
