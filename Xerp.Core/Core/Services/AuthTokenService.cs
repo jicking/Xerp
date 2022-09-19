@@ -13,8 +13,12 @@ public class Auth0TokenService : IAuthTokenService {
 		var request = new RestRequest("/token", Method.Post);
 		request.AddHeader("content-type", "application/json");
 		request.AddParameter("application/json", "{\"client_id\":\"hxc3B3CXbrXDskMh7WDxYhBxsxYzwrSN\",\"client_secret\":\"wyt6E3aX4gkMYf3XHazuG0W1PU3LBF6ecyGSyFK_tWeJCFZ3eoWdFqjxwsL1TWmr\",\"audience\":\"xerp-service\",\"grant_type\":\"client_credentials\"}", ParameterType.RequestBody);
-		var response = await client.GetAsync<AuthToken>(request, CancellationToken.None);
-		return response;
+		var response = await client.GetAsync(request, CancellationToken.None);
+
+		if (response.IsSuccessful)
+			return null;
+
+		return null;
 	}
 }
 
