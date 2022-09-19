@@ -1,9 +1,12 @@
 using AutoWrapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
+using System;
 using Xerp.Core.Services;
+using Xerp.Data;
 
 namespace Xerp;
 
@@ -26,7 +29,7 @@ public class Program {
 
 			// Swagger config
 			builder.Services.AddSwaggerGen(option => {
-				//option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+				option.SwaggerDoc("v1", new OpenApiInfo { Title = "Xerp API", Version = "v1" });
 				option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
 					In = ParameterLocation.Header,
 					Description = "Please enter a valid token",
@@ -73,6 +76,13 @@ public class Program {
 
 			// Add custom services
 			builder.Services.AddScoped<IAuthTokenService, Auth0TokenService>();
+			builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
+			// EF
+			builder.Services.AddDbContext<XerpDbContext>(o => o.UseInMemoryDatabase("XerpDbContext"));
+			//var connectionString = builder.Configuration.GetConnectionString("XerpDbContext");
+			//builder.Services.AddDbContext<XerpDbContext>(options =>
+			//	options.UseSqlServer(connectionString));
 
 			var app = builder.Build();
 

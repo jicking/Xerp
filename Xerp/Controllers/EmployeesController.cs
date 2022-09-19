@@ -1,41 +1,42 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Xerp.Core.DTO;
+using Xerp.Core.Services;
 
 namespace Xerp.Controllers;
 
 [Route("api/[controller]"), ApiController, Authorize]
 public class EmployeesController : ControllerBase {
 	private readonly ILogger<EmployeesController> _logger;
-	private readonly List<EmployeeDto> _employees;
+	private readonly IEmployeeService _employeeSvc;
 
-	public EmployeesController(ILogger<EmployeesController> logger) {
+	public EmployeesController(
+		ILogger<EmployeesController> logger,
+		IEmployeeService employeeSvc
+		) {
 		_logger = logger;
+		_employeeSvc = employeeSvc;
 
-		// seed data
-		_employees = new List<EmployeeDto>()
-		{
-			new EmployeeDto()
-			{
-				Id = new Guid(),
-				FirstName = "",
-				LastName = "",
-				MiddleName = "",
-				BirthDate = DateTime.Now.AddYears(-18)
-			}
-		};
+		// seed data (remove when connects to db.)
+		_employeeSvc.SeedInMemoryDb();
 	}
 
 	// GET: api/<EmployeesController>
 	[HttpGet]
-	public IEnumerable<EmployeeDto> Get() {
-		return _employees;
+	public async Task<IEnumerable<EmployeeDto>> GetAsync() {
+		return await _employeeSvc.GetAllAsync();
 	}
 
 	// GET api/<EmployeesController>/5
-	[HttpGet("{id}")]
-	public EmployeeDto? Get(Guid id) {
-		return _employees.FirstOrDefault(e => e.Id == id);
+	//[HttpGet("{id}")]
+	//public EmployeeDto? Get(Guid id) {
+	//	return _employees.FirstOrDefault(e => e.Id == id);
+	//}
+
+	// POST: api/<EmployeesController>
+	[HttpPost]
+	public async Task<EmployeeDto> PostAsync(EmployeeDto payload) {
+		return await _employeeSvc.AddAsync(payload);
 	}
 
 	[HttpGet("test")]
