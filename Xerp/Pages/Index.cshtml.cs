@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Xerp.Pages {
-	public class IndexModel : PageModel {
-		private readonly ILogger<IndexModel> _logger;
+namespace Xerp.Pages;
 
-		public IndexModel(ILogger<IndexModel> logger) {
-			_logger = logger;
-		}
+[Authorize]
+public class IndexModel : PageModel {
+	private readonly ILogger<IndexModel> _logger;
 
-		public void OnGet() {
+	public IndexModel(ILogger<IndexModel> logger) {
+		_logger = logger;
+	}
 
-		}
+	public void OnGet() {
+
 	}
 }

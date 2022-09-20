@@ -1,5 +1,9 @@
+using Auth0.AspNetCore.Authentication;
 using AutoWrapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using NLog;
@@ -16,6 +20,7 @@ public class Program {
 
 		try {
 			var builder = WebApplication.CreateBuilder(args);
+			var config = builder.Configuration;
 
 			// NLog: Setup NLog for Dependency injection
 			builder.Logging.ClearProviders();
@@ -62,13 +67,34 @@ public class Program {
 			});
 
 			// Auth
-			builder.Services.AddAuthentication(options => {
-				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-			}).AddJwtBearer(options => {
-				options.Authority = "https://jickingdev.us.auth0.com/";
-				options.Audience = "xerp-service";
+			var authPolicy = new AuthorizationPolicyBuilder()
+								.RequireAuthenticatedUser()
+								//.RequireClaim("xerp.read.all")
+								//.RequireClaim("xerp.write.all")
+								//.RequireRole("xerp.admin")
+								.Build();
+			builder.Services.AddControllersWithViews(options =>
+				options.Filters.Add(new AuthorizeFilter(authPolicy)));
+			builder.Services.AddRazorPages()
+				.AddMvcOptions(options => options.Filters.Add(new AuthorizeFilter(authPolicy)));
+
+			builder.Services.AddAuth0WebAppAuthentication(options => {
+				options.Domain = config["Auth0:Domain"];
+				options.ClientId = config["Auth0:ClientId"];
+				options.ClientSecret = config["Auth0:ClientSecret"];
+			})
+			.WithAccessToken(options => {
+				options.Audience = config["Auth0:Audience"];
+				options.UseRefreshTokens = true;
 			});
+
+			//builder.Services.AddAuthentication(options => {
+			//	//options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+			//	//options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			//}).AddJwtBearer(options => {
+			//	options.Authority = "https://jickingdev.us.auth0.com/";
+			//	options.Audience = "xerp-service";
+			//});
 
 			// Add custom options
 			//builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.GoogleRecaptcha));
