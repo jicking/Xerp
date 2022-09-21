@@ -1,5 +1,7 @@
+using Auth0.AspNetCore.Authentication;
 using AutoWrapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using NLog;
@@ -16,39 +18,40 @@ public class Program {
 
 		try {
 			var builder = WebApplication.CreateBuilder(args);
+			var config = builder.Configuration;
 
 			// NLog: Setup NLog for Dependency injection
 			builder.Logging.ClearProviders();
 			builder.Host.UseNLog();
 
 			// Add services to the container.
-			builder.Services.AddRazorPages();
-			builder.Services.AddControllers();
+			//builder.Services.AddRazorPages();
+			//builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 
 			// Swagger config
 			builder.Services.AddSwaggerGen(option => {
 				option.SwaggerDoc("v1", new OpenApiInfo { Title = "Xerp API", Version = "v1" });
-				option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
-					In = ParameterLocation.Header,
-					Description = "Please enter a valid token",
-					Name = "Authorization",
-					Type = SecuritySchemeType.Http,
-					BearerFormat = "JWT",
-					Scheme = "Bearer"
-				});
-				option.AddSecurityRequirement(new OpenApiSecurityRequirement {
-					{
-						new OpenApiSecurityScheme
-						{
-							Reference = new OpenApiReference {
-								Type=ReferenceType.SecurityScheme,
-								Id="Bearer"
-							}
-						},
-						new string[]{}
-					}
-				});
+				//option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
+				//	In = ParameterLocation.Header,
+				//	Description = "Please enter a valid token",
+				//	Name = "Authorization",
+				//	Type = SecuritySchemeType.Http,
+				//	BearerFormat = "JWT",
+				//	Scheme = "Bearer"
+				//});
+				//option.AddSecurityRequirement(new OpenApiSecurityRequirement {
+				//	{
+				//		new OpenApiSecurityScheme
+				//		{
+				//			Reference = new OpenApiReference {
+				//				Type=ReferenceType.SecurityScheme,
+				//				Id="Bearer"
+				//			}
+				//		},
+				//		new string[]{}
+				//	}
+				//});
 			});
 
 			// CORS
@@ -62,13 +65,35 @@ public class Program {
 			});
 
 			// Auth
-			builder.Services.AddAuthentication(options => {
-				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-			}).AddJwtBearer(options => {
-				options.Authority = "https://jickingdev.us.auth0.com/";
-				options.Audience = "xerp-service";
+			var authPolicy = new AuthorizationPolicyBuilder()
+								.RequireAuthenticatedUser()
+								//.RequireClaim("xerp.read.all")
+								//.RequireClaim("xerp.write.all")
+								//.RequireRole("xerp.admin")
+								.Build();
+			builder.Services.AddControllersWithViews(options =>
+				options.Filters.Add(new AuthorizeFilter(authPolicy)));
+			builder.Services.AddRazorPages()
+				.AddMvcOptions(options => options.Filters.Add(new AuthorizeFilter(authPolicy)));
+
+			builder.Services.AddAuth0WebAppAuthentication(options => {
+				options.Domain = config["Auth0:Domain"];
+				options.ClientId = config["Auth0:ClientId"];
+				options.ClientSecret = config["Auth0:ClientSecret"];
+				options.Scope = "openid profile email";
+			})
+			.WithAccessToken(options => {
+				options.Audience = config["Auth0:Audience"];
+				options.UseRefreshTokens = true;
 			});
+
+			//builder.Services.AddAuthentication(options => {
+			//	//options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+			//	//options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			//}).AddJwtBearer(options => {
+			//	options.Authority = "https://jickingdev.us.auth0.com/";
+			//	options.Audience = "xerp-service";
+			//});
 
 			// Add custom options
 			//builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(AppOptions.GoogleRecaptcha));
