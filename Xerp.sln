@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xerp", "Xerp\Xerp.csproj", "{8C85DE92-C32B-4A0B-A7A4-828A9373F34A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xerp", "Xerp\Xerp.csproj", "{8C85DE92-C32B-4A0B-A7A4-828A9373F34A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xerp.Core", "Xerp.Core\Xerp.Core.csproj", "{A6283A73-0711-428A-8CAA-CE4E3A00A4EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xerp.Core", "Xerp.Core\Xerp.Core.csproj", "{A6283A73-0711-428A-8CAA-CE4E3A00A4EC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5D119F4A-67C1-4B82-9318-289BC8E3AB54}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xerp.Tests", "Xerp.Tests\Xerp.Tests.csproj", "{CD208B38-F1D7-4D6E-9682-184444032D58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xerp.Tests", "Xerp.Tests\Xerp.Tests.csproj", "{CD208B38-F1D7-4D6E-9682-184444032D58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

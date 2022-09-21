@@ -27,33 +27,33 @@ public class Program {
 			builder.Host.UseNLog();
 
 			// Add services to the container.
-			builder.Services.AddRazorPages();
-			builder.Services.AddControllers();
+			//builder.Services.AddRazorPages();
+			//builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 
 			// Swagger config
 			builder.Services.AddSwaggerGen(option => {
 				option.SwaggerDoc("v1", new OpenApiInfo { Title = "Xerp API", Version = "v1" });
-				option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
-					In = ParameterLocation.Header,
-					Description = "Please enter a valid token",
-					Name = "Authorization",
-					Type = SecuritySchemeType.Http,
-					BearerFormat = "JWT",
-					Scheme = "Bearer"
-				});
-				option.AddSecurityRequirement(new OpenApiSecurityRequirement {
-					{
-						new OpenApiSecurityScheme
-						{
-							Reference = new OpenApiReference {
-								Type=ReferenceType.SecurityScheme,
-								Id="Bearer"
-							}
-						},
-						new string[]{}
-					}
-				});
+				//option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
+				//	In = ParameterLocation.Header,
+				//	Description = "Please enter a valid token",
+				//	Name = "Authorization",
+				//	Type = SecuritySchemeType.Http,
+				//	BearerFormat = "JWT",
+				//	Scheme = "Bearer"
+				//});
+				//option.AddSecurityRequirement(new OpenApiSecurityRequirement {
+				//	{
+				//		new OpenApiSecurityScheme
+				//		{
+				//			Reference = new OpenApiReference {
+				//				Type=ReferenceType.SecurityScheme,
+				//				Id="Bearer"
+				//			}
+				//		},
+				//		new string[]{}
+				//	}
+				//});
 			});
 
 			// CORS
@@ -82,6 +82,7 @@ public class Program {
 				options.Domain = config["Auth0:Domain"];
 				options.ClientId = config["Auth0:ClientId"];
 				options.ClientSecret = config["Auth0:ClientSecret"];
+				options.Scope = "openid profile email";
 			})
 			.WithAccessToken(options => {
 				options.Audience = config["Auth0:Audience"];
