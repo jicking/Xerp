@@ -14,12 +14,18 @@ variables:
 
 
 steps:
-# Enable GitVersion
-# https://gitversion.net/docs/
-#- task: gitversion/setup@0
-#  inputs:
-#    versionSpec: '5.x'
-#- task: gitversion/execute@0
+# GitVersioning
+# Make sure you have disabled shallow fetch of git sources setting on azure devops
+- task: DotNetCoreCLI@2  
+  displayName: Install NBGV tool
+  inputs:
+    command: custom
+    custom: tool
+    arguments: install --tool-path . nbgv
+
+# disabled as i prefer incremental build numbers by date
+- script: nbgv cloud -a
+  displayName: Set Version
 
 # Run donet scripts
 - script: dotnet restore
