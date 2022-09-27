@@ -19,6 +19,10 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center p-0 mb-0">
             <h2 class="h3">Employees</h2>
             <div class="btn-toolbar mb-2 mb-md-0">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-sm btn-outline-primary mx-1" @@click="$store.modal.showCreate()" data-bs-toggle="modal" data-bs-target="#pageModal">
+                    Create
+                </button>
                 <button type="button" class="btn btn-sm btn-outline-secondary" @@click="hydrateTableData">
                     Reload
                 </button>
@@ -47,17 +51,78 @@
                                 <td x-text="d.name"></td>
                                 <td>data</td>
                                 <td>placeholder</td>
-                                <td>text</td>
+                                <td>
+                                    <div class="pull-end">
+                                        <button type="button" class="btn btn-sm btn-outline-primary mx-1" @@click="$store.modal.showUpdate(d.name)" data-bs-toggle="modal" data-bs-target="#pageModal">
+                                            Edit
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" @@click="$store.modal.showDelete(d.name)" data-bs-toggle="modal" data-bs-target="#pageModal">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         </template>
                     </tbody>
                 </table>
             </template>
-
-
         </div>
     </div>
 </main>
+
+<!-- Modal -->
+<div class="modal fade" id="pageModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+
+        <template x-data x-if="$store.modal.mode === 0">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Create Employee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" x-data x-text="$store.modal.data.name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </template>
+
+
+        <template x-data x-if="$store.modal.mode === 1">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Update Employee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" x-data x-text="$store.modal.data.name">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </template>
+
+        <template x-data x-if="$store.modal.mode === 2">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Employee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" x-data x-text="$store.modal.data.name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </template>
+
+    </div>
+</div>
 
 <script>
     // declare component handlers
@@ -78,10 +143,37 @@
                 .then((json) => json.results)
         }
     })
+    // declare global store for page modal
+    let modal = {
+        show: false,
+        toggle() {
+            this.show = !this.show
+        },
+        data: {},
+        mode: 0, // 0 = create, 1 = update, 2 = delete
+        showCreate() {
+            this.mode = 0
+        },
+        showUpdate(id) {
+            this.mode = 1
+            this.data = {name:id}
+        },
+        showDelete(id) {
+            this.mode = 2
+            this.data = { name: id }
+        }
+    }
+
 
     // init components
     document.addEventListener('alpine:init', () => {
-        Alpine.data('dropdown', dropdown)
         Alpine.data('employeesTable', employeesTable)
+        Alpine.store('modal', modal)
+        Alpine.store('darkMode', {
+            on: false,
+            toggle() {
+                this.on = !this.on
+            }
+        })
     })
 </script>
