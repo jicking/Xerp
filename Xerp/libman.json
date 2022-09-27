@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "provider": "unpkg",
+      "library": "alpinejs@3.10.3",
+      "destination": "wwwroot/lib/alpinejs/",
+      "files": [
+        "dist/cdn.min.js"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "@alpinejs/persist@3.10.2",
+      "destination": "wwwroot/lib/alpinejs/persist/",
+      "files": [
+        "dist/cdn.min.js"
+      ]
+    }
+  ]
+}
