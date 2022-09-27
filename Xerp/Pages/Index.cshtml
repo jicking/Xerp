@@ -1,13 +1,17 @@
 @page
 @model IndexModel
 @using System.Reflection
+@using System.Diagnostics
 @{
     ViewData["Title"] = "Home page";
-    Version version = Assembly.GetEntryAssembly().GetName().Version;
+
+    Assembly assembly = Assembly.GetExecutingAssembly();
+    FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+    string version = fileVersionInfo.ProductVersion;
 }
 
 <div class="text-center">
     <h1 class="display-4">XERP</h1>
     <p>Demo ERP App.</p>
-    <p>V @(version?.Major + "." + version?.Minor + "." + version?.Build)</p>
+    <p>V @(version)</p>
 </div>
